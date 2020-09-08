@@ -1,0 +1,458 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>理解JS作用域 - Alina Blog</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="google" content="notranslate" />
+
+  
+  
+  <meta name="description" content="什么是作用域？作用域是代码在运行时，各个变量、函数和对..."> 
+  
+  <meta name="author" content="Alina"> 
+
+  
+    <link rel="icon" href="/images/icons/favicon-16x16.png" type="image/png" sizes="16x16">
+  
+  
+    <link rel="icon" href="/images/icons/favicon-32x32.png" type="image/png" sizes="32x32">
+  
+  
+    <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png" sizes="180x180">
+  
+  
+    <meta rel="mask-icon" href="/images/icons/stun-logo.svg" color="#333333">
+  
+  
+    <meta rel="msapplication-TileImage" content="/images/icons/favicon-144x144.png">
+    <meta rel="msapplication-TileColor" content="#000000">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+  
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1445822_0sri83bhiv7.css">
+
+  
+
+  
+  
+  
+<link rel="stylesheet" href="https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min.css">
+
+  
+
+  
+  
+  
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/xcode.min.css">
+
+  
+
+  
+  
+  
+<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/justifiedGallery/3.7.0/css/justifiedGallery.min.css">
+
+  
+
+  <script>
+    var CONFIG = window.CONFIG || {};
+    var ZHAOO = window.ZHAOO || {};
+    CONFIG = {
+      fancybox: true,
+      pjax: false,
+      lazyload: {
+        enable: true,
+        loadingImage: '/images/theme/loading.gif',
+      },
+      donate: {
+        enable: false,
+        alipay: '',
+        wechat: ''
+      },
+      motto: {
+        api: '',
+        default: '明天太远，今天太短，那就关注当下！'
+      },
+      galleries: {
+        enable: true
+      },
+      fab: {
+        enable: true,
+        alwaysShow: false
+      },
+      carrier: {
+        enable: true
+      },
+      daovoice: {
+        enable: true
+      }
+    }
+  </script>
+
+  
+
+  
+<meta name="generator" content="Hexo 5.0.2"></head>
+<body class="lock-screen">
+  <div class="loading"></div>
+  <nav class="menu">
+  <div class="menu-close">
+    <i class="iconfont iconplus"></i>
+  </div>
+  <ul class="menu-content">
+    
+    
+    
+    
+    <li class="menu-item"><a href="/ "> 首页</a></li>
+    
+    
+    
+    
+    <li class="menu-item"><a href="/galleries "> 摄影</a></li>
+    
+    
+    
+    
+    <li class="menu-item"><a href="/archives "> 归档</a></li>
+    
+    
+    
+    
+    <li class="menu-item"><a href="/tags "> 标签</a></li>
+    
+    
+    
+    
+    <li class="menu-item"><a href="/categories "> 分类</a></li>
+    
+    
+    
+    
+    <li class="menu-item"><a href="/about "> 关于</a></li>
+    
+  </ul>
+  <div class="menu-copyright"><p>Copyright© 2017-2020 | <a target="_blank" href="https://alina-qiu.github.io/">Alina-qiu</a> .AllRightsReserved</p></div>
+</nav>
+  <main id="main">
+  <div class="container" id="container">
+    <article class="article">
+  <section class="head">
+  <img   class="lazyload" data-original="/images/theme/post-image.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <div class="head-mask">
+    <h1 class="head-title">理解JS作用域</h1>
+    <div class="head-info">
+      <span class="post-info-item"><i class="iconfont iconcalendar"></i>2018-10-28</span
+        class="post-info-item">
+      
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>10228</span>
+    </div>
+  </div>
+</section>
+  <section class="main">
+    <section class="content">
+      <h3 id="什么是作用域？"><a href="#什么是作用域？" class="headerlink" title="什么是作用域？"></a>什么是作用域？</h3><p>作用域是代码在运行时，各个变量、函数和对象的可访问性。换句话说，作用域决定了代码里的变量和其他资源在各个区域中的可见性。</p>
+<h3 id="为什么需要作用域？最小访问原则"><a href="#为什么需要作用域？最小访问原则" class="headerlink" title="为什么需要作用域？最小访问原则"></a>为什么需要作用域？最小访问原则</h3><p>那么，限制变量的可见性，不允许代码中所有的东西在任意地方都可用的好处是什么？</p>
+<p>其中一个优势，是作用域为代码提供了一个安全层级。计算机安全中，有个常规的原则是：用户只能访问他们当前需要的东西。</p>
+<p>想想计算机管理员吧。他们在公司各个系统上拥有很多控制权，看起来甚至可以给予他们拥有全部权限的账号。假设你有一家公司，拥有三个管理员，他们都有系统的全部访问权限，并且一切运转正常。但是突然发生了一点意外，你的一个系统遭到恶意病毒攻击。现在你不知道这谁出的问题了吧？你这才意识到你应该只给他们基本用户的账号，并且只在需要时赋予他们完全的访问权。这能帮助你跟踪变化并记录每个人的操作。这叫做最小访问原则。眼熟吗？这个原则也应用于编程语言设计，在大多数编程语言（包括 JavaScript）中称为作用域。</p>
+<p>在编程旅途中，作用域在代码中可以提升性能，跟踪 bug 并减少 bug。作用域还解决不同范围的同名变量命名问题。记住不要弄混作用域和上下文。它们是不同的特性！</p>
+<h3 id="JavaScript中的作用域"><a href="#JavaScript中的作用域" class="headerlink" title="JavaScript中的作用域"></a>JavaScript中的作用域</h3><p>在 JavaScript 中有两种作用域</p>
+<ul>
+<li>全局作用域</li>
+<li>局部作用域</li>
+</ul>
+<p>当变量定义在一个函数中时，变量就在局部作用域中，而定义在函数之外的变量则从属于全局作用域。每个函数在调用的时候会创建一个新的作用域。</p>
+<h3 id="全局作用域"><a href="#全局作用域" class="headerlink" title="全局作用域"></a>全局作用域</h3><p>当在文档中（document）编写 JavaScript 时，就已经在全局作用域中了。JavaScript 文档中（document）只有一个全局作用域。定义在函数之外的变量会被保存在全局作用域中。</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">// the scope <span class="hljs-keyword">is</span> <span class="hljs-keyword">by</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">global</span><br>var <span class="hljs-type">name</span> = <span class="hljs-string">&#x27;Hammad&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<p>全局作用域里的变量能够在其他作用域中被访问和修改。</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs awk">var name = <span class="hljs-string">&#x27;Hammad&#x27;</span>;<br> <br>console.log(name); <span class="hljs-regexp">//</span> logs <span class="hljs-string">&#x27;Hammad&#x27;</span><br> <br><span class="hljs-keyword">function</span> logName() &#123;<br>    console.log(name); <span class="hljs-regexp">//</span> <span class="hljs-string">&#x27;name&#x27;</span> is accessible here and everywhere <span class="hljs-keyword">else</span><br>&#125;<br> <br>logName(); <span class="hljs-regexp">//</span> logs <span class="hljs-string">&#x27;Hammad&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="局部作用域"><a href="#局部作用域" class="headerlink" title="局部作用域"></a>局部作用域</h3><p>定义在函数中的变量就在局部作用域中。并且函数在每次调用时都有一个不同的作用域。这意味着同名变量可以用在不同的函数中。因为这些变量绑定在不同的函数中，拥有不同作用域，彼此之间不能访问。</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-regexp">//</span> Global Scope<br><span class="hljs-keyword">function</span> someFunction() &#123;<br>    <span class="hljs-regexp">//</span> Local Scope <span class="hljs-comment">##1</span><br>    <span class="hljs-keyword">function</span> someOtherFunction() &#123;<br>        <span class="hljs-regexp">//</span> Local Scope <span class="hljs-comment">##2</span><br>    &#125;<br>&#125;<br> <br><span class="hljs-regexp">//</span> Global Scope<br><span class="hljs-keyword">function</span> anotherFunction() &#123;<br>    <span class="hljs-regexp">//</span> Local Scope <span class="hljs-comment">##3</span><br>&#125;<br><span class="hljs-regexp">//</span> Global Scope<br></code></pre></td></tr></table></figure>
+
+<h3 id="块语句"><a href="#块语句" class="headerlink" title="块语句"></a>块语句</h3><p>块级声明包括if和switch，以及for和while循环，和函数不同，它们不会创建新的作用域。在块级声明中定义的变量从属于该块所在的作用域。</p>
+<figure class="highlight sqf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sqf"><span class="hljs-keyword">if</span> (<span class="hljs-literal">true</span>) &#123;<br>    <span class="hljs-comment">// this &#x27;if&#x27; conditional block doesn&#x27;t create a new scope</span><br>    var <span class="hljs-built_in">name</span> = <span class="hljs-string">&#x27;Hammad&#x27;</span>; <span class="hljs-comment">// name is still in the global scope</span><br>&#125;<br> <br>console.<span class="hljs-built_in">log</span>(<span class="hljs-built_in">name</span>); <span class="hljs-comment">// logs &#x27;Hammad&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<p>ECMAScript 6 引入了let和const关键字。这些关键字可以代替var。</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">var name</span> = <span class="hljs-string">&#x27;Hammad&#x27;</span>;<br> <br><span class="hljs-attribute">let likes</span> = <span class="hljs-string">&#x27;Coding&#x27;</span>;<br><span class="hljs-attribute">const skills</span> = <span class="hljs-string">&#x27;Javascript and PHP&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<p>和var关键字不同，let和const关键字支持在块级声明中创建使用局部作用域。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">if</span> (<span class="hljs-literal">true</span>) &#123;<br>    <span class="hljs-comment">// this &#x27;if&#x27; conditional block doesn&#x27;t create a scope</span><br> <br>    <span class="hljs-comment">// name is in the global scope because of the &#x27;var&#x27; keyword</span><br>    <span class="hljs-keyword">var</span> name = <span class="hljs-string">&#x27;Hammad&#x27;</span>;<br>    <span class="hljs-comment">// likes is in the local scope because of the &#x27;let&#x27; keyword</span><br>    <span class="hljs-keyword">let</span> likes = <span class="hljs-string">&#x27;Coding&#x27;</span>;<br>    <span class="hljs-comment">// skills is in the local scope because of the &#x27;const&#x27; keyword</span><br>    <span class="hljs-keyword">const</span> skills = <span class="hljs-string">&#x27;JavaScript and PHP&#x27;</span>;<br>&#125;<br> <br><span class="hljs-built_in">console</span>.log(name); <span class="hljs-comment">// logs &#x27;Hammad&#x27;</span><br><span class="hljs-built_in">console</span>.log(likes); <span class="hljs-comment">// Uncaught ReferenceError: likes is not defined</span><br><span class="hljs-built_in">console</span>.log(skills); <span class="hljs-comment">// Uncaught ReferenceError: skills is not defined</span><br></code></pre></td></tr></table></figure>
+
+<p>一个应用中全局作用域的生存周期与该应用相同。局部作用域只在该函数调用执行期间存在。</p>
+<h3 id="上下文"><a href="#上下文" class="headerlink" title="上下文"></a><strong>上下文</strong></h3><p>我们经常弄混作用域和上下文，似乎两者是一个概念。但并非如此。作用域是我们上面讲到的那些，而上下文通常涉及到代码某些特殊部分中的this值。作用域指的是变量的可见性，而上下文指的是在相同的作用域中的this的值。我们当然也可以使用函数方法改变上下文，这个之后我们再讨论。在全局作用域中，上下文总是 Window 对象。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// logs: Window &#123;speechSynthesis: SpeechSynthesis, caches: CacheStorage, localStorage: Storage…&#125;</span><br><span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">this</span>);<br> <br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">logFunction</span>(<span class="hljs-params"></span>) </span>&#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">this</span>);<br>&#125;<br><span class="hljs-comment">// logs: Window &#123;speechSynthesis: SpeechSynthesis, caches: CacheStorage, localStorage: Storage…&#125;</span><br><span class="hljs-comment">// because logFunction() is not a property of an object</span><br>logFunction();<br></code></pre></td></tr></table></figure>
+
+<p>如果作用域定义在一个对象的方法中，上下文就是这个方法所在的那个对象。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> &#123;</span><br>    logName() &#123;<br>        console.<span class="hljs-built_in">log</span>(<span class="hljs-keyword">this</span>);<br>    &#125;<br>&#125;<br> <br>(<span class="hljs-keyword">new</span> User).logName(); <span class="hljs-comment">// logs User &#123;&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>(new User).logName()是创建对象关联到变量并调用logName方法的一种简便形式。通过这种方式我们并不需要创建一个新的变量。</p>
+<p>可能注意到一点，就是如果使用new关键字调用函数时上下文的值会有差异。上下文会设置为被调用的函数的实例。考虑一下上面的这个例子，用new关键字调用的函数。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">logFunction</span>(<span class="hljs-params"></span>) </span>&#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">this</span>);<br>&#125;<br> <br><span class="hljs-keyword">new</span> logFunction(); <span class="hljs-comment">// logs logFunction &#123;&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>当在严格模式（strict mode）中调用函数时，上下文默认是 undefined。</p>
+<h3 id="执行环境"><a href="#执行环境" class="headerlink" title="执行环境"></a><strong>执行环境</strong></h3><p>为了解决掉我们从上面学习中会出现的各种困惑，“执行环境（context）”这个词中的“环境（context）”指的是作用域而并非上下文。这是一个怪异的命名约定，但由于 JavaScript 的文档如此，我们只好也这样约定。</p>
+<p>JavaScript 是一种单线程语言，所以它同一时间只能执行单个任务。其他任务排列在执行环境中。当 JavaScript 解析器开始执行你的代码，环境（作用域）默认设为全局。全局环境添加到你的执行环境中，事实上这是执行环境里的第一个环境。</p>
+<p>之后，每个函数调用都会添加它的环境到执行环境中。无论是函数内部还是其他地方调用函数，都会是相同的过程。</p>
+<p>每个函数都会创建它自己的执行环境。</p>
+<p>当浏览器执行完环境中的代码，这个环境会从执行环境中弹出，执行环境中当前环境的状态会转移到父级环境。浏览器总是先执行在执行栈顶的执行环境（事实上就是你代码最里层的作用域）。</p>
+<p>全局环境只能有一个，函数环境可以有任意多个。</p>
+<p>执行环境有两个阶段：创建和执行。</p>
+<p><strong>创建阶段</strong></p>
+<p>第一阶段是创建阶段，是函数刚被调用但代码并未执行的时候。创建阶段主要发生了 3 件事。</p>
+<ul>
+<li>创建变量对象</li>
+<li>创建作用域链</li>
+<li>设置上下文（this）的值</li>
+</ul>
+<p><strong>变量对象</strong></p>
+<p>变量对象（Variable Object）也称为活动对象（activation object），包含所有变量、函数和其他在执行环境中定义的声明。当函数调用时，解析器扫描所有资源，包括函数参数、变量和其他声明。当所有东西装填进一个对象，这个对象就是变量对象。</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs ada"><span class="hljs-symbol">&#x27;variableObject</span>&#x27;: &#123;<br>    // contains <span class="hljs-keyword">function</span> <span class="hljs-title">arguments,</span> inner variable and <span class="hljs-keyword">function</span> <span class="hljs-title">declarations</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>作用域链</strong></p>
+<p>在执行环境创建阶段，作用域链在变量对象之后创建。作用域链包含变量对象。作用域链用于解析变量。当解析一个变量时，JavaScript 开始从最内层沿着父级寻找所需的变量或其他资源。作用域链包含自己执行环境以及所有父级环境中包含的变量对象。</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs xquery"><span class="hljs-string">&#x27;scopeChain&#x27;</span>: &#123;<br>    //<span class="hljs-built_in"> contains</span> its own <span class="hljs-keyword">variable</span> object <span class="hljs-keyword">and</span> other <span class="hljs-keyword">variable</span> objects <span class="hljs-keyword">of</span> the parent execution contexts<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>执行环境对象</strong></p>
+<p>执行环境可以用下面抽象对象表示：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs awk">executionContextObject = &#123;<br>    <span class="hljs-string">&#x27;scopeChain&#x27;</span>: &#123;&#125;, <span class="hljs-regexp">//</span> contains its own variableObject and other variableObject of the parent execution contexts<br>    <span class="hljs-string">&#x27;variableObject&#x27;</span>: &#123;&#125;, <span class="hljs-regexp">//</span> contains <span class="hljs-keyword">function</span> arguments, inner variable and <span class="hljs-keyword">function</span> declarations<br>    <span class="hljs-string">&#x27;this&#x27;</span>: valueOfThis<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>代码执行阶段</strong></p>
+<p>执行环境的第二个阶段就是代码执行阶段，进行其他赋值操作并且代码最终被执行。</p>
+<h3 id="词法作用域"><a href="#词法作用域" class="headerlink" title="词法作用域"></a>词法作用域</h3><p>词法作用域的意思是在函数嵌套中，内层函数可以访问父级作用域的变量等资源。这意味着子函数词法绑定到了父级执行环境。词法作用域有时和静态作用域有关。</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs actionscript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">grandfather</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">var</span> name = <span class="hljs-string">&#x27;Hammad&#x27;</span>;<br>    <span class="hljs-comment">// likes is not accessible here</span><br>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parent</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-comment">// name is accessible here</span><br>        <span class="hljs-comment">// likes is not accessible here</span><br>        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">child</span><span class="hljs-params">()</span> </span>&#123;<br>            <span class="hljs-comment">// Innermost level of the scope chain</span><br>            <span class="hljs-comment">// name is also accessible here</span><br>            <span class="hljs-keyword">var</span> likes = <span class="hljs-string">&#x27;Coding&#x27;</span>;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>你可能注意到了词法作用域是向前的，意思是子执行环境可以访问name。但不是由父级向后的，意味着父级不能访问likes。这也告诉了我们，在不同执行环境中同名变量优先级在执行栈由上到下增加。一个变量和另一个变量同名，内层函数（执行栈顶的环境）有更高的优先级。</p>
+<h3 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h3><p>闭包的概念和我们刚学习的词法作用域紧密相关。当内部函数试着访问外部函数的作用域链（词法作用域之外的变量）时产生闭包。闭包包括它们自己的作用域链、父级作用域链和全局作用域。</p>
+<p>闭包不仅能访问外部函数的变量，也能访问外部函数的参数。</p>
+<p>即使函数已经return，闭包仍然能访问外部函数的变量。这意味着return的函数允许持续访问外部函数的所有资源。</p>
+<p>当你的外部函数return一个内部函数，调用外部函数时return的函数并不会被调用。你必须先用一个单独的变量保存外部函数的调用，然后将这个变量当做函数来调用。看下面这个例子：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs lua"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">greet</span><span class="hljs-params">()</span></span> &#123;<br>    name = <span class="hljs-string">&#x27;Hammad&#x27;</span>;<br>    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span></span> &#123;<br>        console.<span class="hljs-built_in">log</span>(<span class="hljs-string">&#x27;Hi &#x27;</span> + name);<br>    &#125;<br>&#125;<br> <br>greet(); // nothing happens, no errors<br> <br>// the returned <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">from</span> <span class="hljs-title">greet</span><span class="hljs-params">()</span></span> gets saved <span class="hljs-keyword">in</span> greetLetter<br>greetLetter = greet();<br> <br>// calling greetLetter calls the returned <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">from</span> <span class="hljs-title">the</span> <span class="hljs-title">greet</span><span class="hljs-params">()</span></span> <span class="hljs-function"><span class="hljs-keyword">function</span></span><br><span class="hljs-function"><span class="hljs-title">greetLetter</span><span class="hljs-params">()</span></span>; // logs <span class="hljs-string">&#x27;Hi Hammad&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<p>值得注意的是，即使在greet函数return后，greetLetter函数仍可以访问greet函数的name变量。如果不使用变量赋值来调用greet函数return的函数，一种方法是使用()两次()()，如下所示：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">greet</span>(<span class="hljs-params"></span>) </span>&#123;<br>    name = <span class="hljs-string">&#x27;Hammad&#x27;</span>;<br>    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;<br>        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;Hi &#x27;</span> + name);<br>    &#125;<br>&#125;<br> <br>greet()(); <span class="hljs-comment">// logs &#x27;Hi Hammad&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="使用-call-，-apply-和-bind-改变上下文"><a href="#使用-call-，-apply-和-bind-改变上下文" class="headerlink" title="使用 .call()， .apply() 和 .bind() 改变上下文"></a><strong>使用 .call()， .apply() 和 .bind() 改变上下文</strong></h3><p>Call 和 Apply 函数来改变函数调用时的上下文。这带给你神奇的编程能力（和终极统治世界的能力）。你只需要使用 call 和 apply 函数并把上下文当做第一个参数传入，而不是使用括号来调用函数。函数自己的参数可以在上下文后面传入。</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs less"><span class="hljs-selector-tag">function</span> <span class="hljs-selector-tag">hello</span>() &#123;<br>    <span class="hljs-comment">// do something...</span><br>&#125;<br> <br><span class="hljs-selector-tag">hello</span>(); <span class="hljs-comment">// the way you usually call it</span><br><span class="hljs-selector-tag">hello</span><span class="hljs-selector-class">.call</span>(context); <span class="hljs-comment">// here you can pass the context(value of this) as the first argument</span><br><span class="hljs-selector-tag">hello</span><span class="hljs-selector-class">.apply</span>(context); <span class="hljs-comment">// here you can pass the context(value of this) as the first argument</span><br></code></pre></td></tr></table></figure>
+
+<p>.call()和.apply()的区别是 Call 中其他参数用逗号分隔传入，而 Apply 允许你传入一个参数数组。</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs less"><span class="hljs-selector-tag">function</span> <span class="hljs-selector-tag">introduce</span>(name, interest) &#123;<br>    <span class="hljs-selector-tag">console</span><span class="hljs-selector-class">.log</span>(<span class="hljs-string">&#x27;Hi! I&#x27;</span>m <span class="hljs-string">&#x27;+ name +&#x27;</span> and I like <span class="hljs-string">&#x27;+ interest +&#x27;</span>.&#x27;);<br>    <span class="hljs-selector-tag">console</span><span class="hljs-selector-class">.log</span>(<span class="hljs-string">&#x27;The value of this is &#x27;</span>+ this +<span class="hljs-string">&#x27;.&#x27;</span>)<br>&#125;<br> <br><span class="hljs-selector-tag">introduce</span>(<span class="hljs-string">&#x27;Hammad&#x27;</span>, <span class="hljs-string">&#x27;Coding&#x27;</span>); <span class="hljs-comment">// the way you usually call it</span><br><span class="hljs-selector-tag">introduce</span><span class="hljs-selector-class">.call</span>(window, <span class="hljs-string">&#x27;Batman&#x27;</span>, <span class="hljs-string">&#x27;to save Gotham&#x27;</span>); <span class="hljs-comment">// pass the arguments one by one after the contextt</span><br><span class="hljs-selector-tag">introduce</span><span class="hljs-selector-class">.apply</span>(<span class="hljs-string">&#x27;Hi&#x27;</span>, [<span class="hljs-string">&#x27;Bruce Wayne&#x27;</span>, <span class="hljs-string">&#x27;businesses&#x27;</span>]); <span class="hljs-comment">// pass the arguments in an array after the context</span><br> <br><span class="hljs-comment">// Output:</span><br><span class="hljs-comment">// Hi! I&#x27;m Hammad and I like Coding.</span><br><span class="hljs-comment">// The value of this is [object Window].</span><br><span class="hljs-comment">// Hi! I&#x27;m Batman and I like to save Gotham.</span><br><span class="hljs-comment">// The value of this is [object Window].</span><br><span class="hljs-comment">// Hi! I&#x27;m Bruce Wayne and I like businesses.</span><br><span class="hljs-comment">// The value of this is Hi.</span><br></code></pre></td></tr></table></figure>
+
+<p>Call 比 Apply 的效率高一点。</p>
+<p>下面这个例子列举文档中所有项目，然后依次在控制台打印出来。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;en&quot;</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;UTF-8&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Things to learn<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Things to Learn to Rule the World<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>Learn PHP<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>Learn Laravel<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>Learn JavaScript<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>Learn VueJS<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>Learn CLI<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>Learn Git<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>Learn Astral Projection<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><br><span class="javascript">        <span class="hljs-comment">// Saves a NodeList of all list items on the page in listItems</span></span><br><span class="javascript">        <span class="hljs-keyword">var</span> listItems = <span class="hljs-built_in">document</span>.querySelectorAll(<span class="hljs-string">&#x27;ul li&#x27;</span>);</span><br><span class="javascript">        <span class="hljs-comment">// Loops through each of the Node in the listItems NodeList and logs its content</span></span><br><span class="javascript">        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; listItems.length; i++) &#123;</span><br><span class="javascript">          (<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;</span><br><span class="javascript">            <span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">this</span>.innerHTML);</span><br>          &#125;).call(listItems[i]);<br>        &#125;<br> <br><span class="javascript">        <span class="hljs-comment">// Output logs:</span></span><br><span class="javascript">        <span class="hljs-comment">// Learn PHP</span></span><br><span class="javascript">        <span class="hljs-comment">// Learn Laravel</span></span><br><span class="javascript">        <span class="hljs-comment">// Learn JavaScript</span></span><br><span class="javascript">        <span class="hljs-comment">// Learn VueJS</span></span><br><span class="javascript">        <span class="hljs-comment">// Learn CLI</span></span><br><span class="javascript">        <span class="hljs-comment">// Learn Git</span></span><br><span class="javascript">        <span class="hljs-comment">// Learn Astral Projection</span></span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>HTML文档中仅包含一个无序列表。JavaScript 从 DOM 中选取它们。列表项会被从头到尾循环一遍。在循环时，我们把列表项的内容输出到控制台。</p>
+<p>输出语句包含在由括号包裹的函数中，然后调用call函数。相应的列表项传入 call 函数，确保控制台输出正确对象的 innerHTML。</p>
+<p>对象可以有方法，同样函数对象也可以有方法。事实上，JavaScript 函数有 4 个内置方法：</p>
+<ul>
+<li>Function.prototype.apply()</li>
+<li>Function.prototype.bind() (Introduced in ECMAScript 5 (ES5))</li>
+<li>Function.prototype.call()</li>
+<li>Function.prototype.toString()</li>
+</ul>
+<p>Function.prototype.toString()返回函数代码的字符串表示。</p>
+<p>到现在为止，我们讨论了.call()、.apply()和toString()。与 Call 和 Apply 不同，Bind 并不是自己调用函数，它只是在函数调用之前绑定上下文和其他参数。在上面提到的例子中使用 Bind：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">(<span class="hljs-keyword">function</span> introduce(<span class="hljs-type">name</span>, interest) &#123;<br>    console.log(<span class="hljs-string">&#x27;Hi! I&#x27;</span>m <span class="hljs-string">&#x27;+ name +&#x27;</span> <span class="hljs-keyword">and</span> I <span class="hljs-keyword">like</span> <span class="hljs-string">&#x27;+ interest +&#x27;</span>.<span class="hljs-string">&#x27;);</span><br><span class="hljs-string">    console.log(&#x27;</span>The <span class="hljs-keyword">value</span> <span class="hljs-keyword">of</span> this <span class="hljs-keyword">is</span> <span class="hljs-string">&#x27;+ this +&#x27;</span>.<span class="hljs-string">&#x27;)</span><br><span class="hljs-string">&#125;).bind(window, &#x27;</span>Hammad<span class="hljs-string">&#x27;, &#x27;</span>Cosmology<span class="hljs-string">&#x27;)();</span><br><span class="hljs-string"> </span><br><span class="hljs-string">// logs:</span><br><span class="hljs-string">// Hi! I&#x27;</span>m Hammad <span class="hljs-keyword">and</span> I <span class="hljs-keyword">like</span> Cosmology.<br>// The <span class="hljs-keyword">value</span> <span class="hljs-keyword">of</span> this <span class="hljs-keyword">is</span> [<span class="hljs-keyword">object</span> <span class="hljs-keyword">Window</span>].<br></code></pre></td></tr></table></figure>
+
+<p>Bind 像call函数一样用逗号分隔其他传入参数，不像apply那样用数组传入参数。</p>
+
+    </section>
+    <section class="extra">
+      
+        <ul class="copyright">
+  
+  <li><strong>本文作者：</strong>Alina</li>
+  <li><strong>本文链接：</strong><a href="http://yoursite.com/2018/10/28/%E7%90%86%E8%A7%A3JS%E4%BD%9C%E7%94%A8%E5%9F%9F/index.html">http://yoursite.com/2018/10/28/%E7%90%86%E8%A7%A3JS%E4%BD%9C%E7%94%A8%E5%9F%9F/index.html</a></li>
+  <li><strong>版权声明：</strong>本博客所有文章均采用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh"
+      rel="external nofollow" target="_blank"> BY-NC-SA </a>许可协议，转载请注明出处！</li>
+  
+</ul>
+      
+      
+      
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BD%9C%E7%94%A8%E5%9F%9F/" rel="tag">作用域</a></li></ul>
+
+      
+<nav class="nav">
+  
+    <a href="/2018/11/15/this%E7%9A%84%E5%80%BC/"><i class="iconfont iconleft"></i>this的值</a>
+  
+  
+    <a href="/2018/08/17/%E5%87%BD%E6%95%B0%E7%9A%84%E7%BB%A7%E6%89%BF/">函数的继承<i class="iconfont iconright"></i></a>
+  
+</nav>
+
+    </section>
+    
+      <section class="comments">
+        
+          <div class="btn" id="comments-btn">查看评论</div>
+        
+        
+      </section>
+    
+  </section>
+</article>
+  </div>
+</main>
+  <footer class="footer">
+  <div class="footer-social">
+    
+    
+    
+    
+    
+    <a href="tencent://message/?Menu=yes&uin=992788754 " target="_blank" onMouseOver="this.style.color= '#12B7F5'"
+      onMouseOut="this.style.color='#CC99CC'">
+      <i class="iconfont footer-social-item  iconQQ "></i>
+    </a>
+    
+    
+    
+    
+    
+    <a href="javascript:; " target="_blank" onMouseOver="this.style.color= '#09BB07'"
+      onMouseOut="this.style.color='#CC99CC'">
+      <i class="iconfont footer-social-item  iconwechat-fill "></i>
+    </a>
+    
+    
+    
+    
+    
+    <a href="https://github.com/Alina-qiu " target="_blank" onMouseOver="this.style.color= '#24292E'"
+      onMouseOut="this.style.color='#CC99CC'">
+      <i class="iconfont footer-social-item  icongithub-fill "></i>
+    </a>
+    
+    
+    
+    
+    
+    <a href="mailto:zqy19957912@163.com " target="_blank" onMouseOver="this.style.color='#FFBE5B'"
+      onMouseOut="this.style.color='#CC99CC'">
+      <i class="iconfont footer-social-item  iconmail"></i>
+    </a>
+    
+  </div>
+  <div class="footer-copyright"><p>Copyright© 2017-2020 | <a target="_blank" href="https://alina-qiu.github.io/">Alina-qiu</a> .AllRightsReserved</p></div>
+</footer>
+  
+      <div class="fab fab-plus">
+    <i class="iconfont iconplus"></i>
+  </div>
+  
+  <div class="fab fab-daovoice">
+    <i class="iconfont iconcomment"></i>
+  </div>
+  
+  <div class="fab fab-up">
+    <i class="iconfont iconcaret-up"></i>
+  </div>
+  <div class="fab fab-menu">
+    <i class="iconfont iconmenu"></i>
+  </div>
+  
+</body>
+
+
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+
+
+
+
+
+
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+
+
+
+
+
+
+<script src="https://cdn.bootcdn.net/ajax/libs/justifiedGallery/3.7.0/js/jquery.justifiedGallery.min.js"></script>
+
+
+
+
+
+
+<script src="https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+
+
+
+
+
+<script src="/js/utils.js"></script>
+<script src="/js/zui.js"></script>
+<script src="/js/script.js"></script>
+
+
+
+
+
+<script defer>
+  (function (i, s, o, g, r, a, m) {
+    i["DaoVoiceObject"] = r;
+    i[r] = i[r] || function () {
+      (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date();
+    a = s.createElement(o), m = s.getElementsByTagName(o)[0];
+    a.async = 1;
+    a.src = g;
+    a.charset = "utf-8";
+    m.parentNode.insertBefore(a, m)
+  })(window, document, "script", ('https:' == document.location.protocol ? 'https:' : 'http:') +
+    "//widget.daovoice.io/widget/0f81ff2f.js", "daovoice")
+  daovoice('init', {
+    app_id: "abcdefg"
+  }, {
+    launcher: {
+      disableLauncherIcon: true,
+    },
+  });
+  daovoice('update');
+</script>
+
+
+
+<script defer>
+  (function () {
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    } else {
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+  })();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</html>

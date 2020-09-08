@@ -1,0 +1,402 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>函数的继承 - Alina Blog</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="google" content="notranslate" />
+
+  
+  
+  <meta name="description" content="说说对象之间的“继承”的五种方法。
+比如，现在有一个“..."> 
+  
+  <meta name="author" content="Alina"> 
+
+  
+    <link rel="icon" href="/images/icons/favicon-16x16.png" type="image/png" sizes="16x16">
+  
+  
+    <link rel="icon" href="/images/icons/favicon-32x32.png" type="image/png" sizes="32x32">
+  
+  
+    <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png" sizes="180x180">
+  
+  
+    <meta rel="mask-icon" href="/images/icons/stun-logo.svg" color="#333333">
+  
+  
+    <meta rel="msapplication-TileImage" content="/images/icons/favicon-144x144.png">
+    <meta rel="msapplication-TileColor" content="#000000">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+  
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1445822_0sri83bhiv7.css">
+
+  
+
+  
+  
+  
+<link rel="stylesheet" href="https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min.css">
+
+  
+
+  
+  
+  
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/xcode.min.css">
+
+  
+
+  
+  
+  
+<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/justifiedGallery/3.7.0/css/justifiedGallery.min.css">
+
+  
+
+  <script>
+    var CONFIG = window.CONFIG || {};
+    var ZHAOO = window.ZHAOO || {};
+    CONFIG = {
+      fancybox: true,
+      pjax: false,
+      lazyload: {
+        enable: true,
+        loadingImage: '/images/theme/loading.gif',
+      },
+      donate: {
+        enable: false,
+        alipay: '',
+        wechat: ''
+      },
+      motto: {
+        api: '',
+        default: '明天太远，今天太短，那就关注当下！'
+      },
+      galleries: {
+        enable: true
+      },
+      fab: {
+        enable: true,
+        alwaysShow: false
+      },
+      carrier: {
+        enable: true
+      },
+      daovoice: {
+        enable: true
+      }
+    }
+  </script>
+
+  
+
+  
+<meta name="generator" content="Hexo 5.0.2"></head>
+<body class="lock-screen">
+  <div class="loading"></div>
+  <nav class="menu">
+  <div class="menu-close">
+    <i class="iconfont iconplus"></i>
+  </div>
+  <ul class="menu-content">
+    
+    
+    
+    
+    <li class="menu-item"><a href="/ "> 首页</a></li>
+    
+    
+    
+    
+    <li class="menu-item"><a href="/galleries "> 摄影</a></li>
+    
+    
+    
+    
+    <li class="menu-item"><a href="/archives "> 归档</a></li>
+    
+    
+    
+    
+    <li class="menu-item"><a href="/tags "> 标签</a></li>
+    
+    
+    
+    
+    <li class="menu-item"><a href="/categories "> 分类</a></li>
+    
+    
+    
+    
+    <li class="menu-item"><a href="/about "> 关于</a></li>
+    
+  </ul>
+  <div class="menu-copyright"><p>Copyright© 2017-2020 | <a target="_blank" href="https://alina-qiu.github.io/">Alina-qiu</a> .AllRightsReserved</p></div>
+</nav>
+  <main id="main">
+  <div class="container" id="container">
+    <article class="article">
+  <section class="head">
+  <img   class="lazyload" data-original="/images/theme/post-image.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <div class="head-mask">
+    <h1 class="head-title">函数的继承</h1>
+    <div class="head-info">
+      <span class="post-info-item"><i class="iconfont iconcalendar"></i>2018-08-17</span
+        class="post-info-item">
+      
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>2307</span>
+    </div>
+  </div>
+</section>
+  <section class="main">
+    <section class="content">
+      <p>说说对象之间的“继承”的五种方法。</p>
+<p>比如，现在有一个“动物”对象的构造函数。</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs actionscript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Animal</span><span class="hljs-params">()</span></span>&#123;<br>    <span class="hljs-keyword">this</span>.species = <span class="hljs-string">&quot;动物&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>还有一个“猫”对象的构造函数。</p>
+<figure class="highlight qml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs qml"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Cat</span>(<span class="hljs-params">name,color</span>)</span>&#123;<br>    <span class="hljs-keyword">this</span>.name = name;<br>    <span class="hljs-keyword">this</span>.color = <span class="hljs-built_in">color</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>怎样才能使“猫”继承“动物”呢？</p>
+<h3 id="1、构造函数绑定"><a href="#1、构造函数绑定" class="headerlink" title="1、构造函数绑定"></a>1、构造函数绑定</h3><p>第一种方法也是最简单的方法，使用call或apply方法，将父对象的构造函数绑定在子对象上，即在子对象构造函数中加一行：</p>
+<figure class="highlight qml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs qml"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Cat</span>(<span class="hljs-params">name,color</span>)</span>&#123;<br>　  Animal.apply(<span class="hljs-keyword">this</span>, <span class="hljs-built_in">arguments</span>);<br>　　<span class="hljs-keyword">this</span>.name = name;<br>　　<span class="hljs-keyword">this</span>.color = <span class="hljs-built_in">color</span>;<br>&#125;<br><span class="hljs-keyword">var</span> cat1 = <span class="hljs-keyword">new</span> Cat(<span class="hljs-string">&quot;大毛&quot;</span>,<span class="hljs-string">&quot;黄色&quot;</span>);<br>alert(cat1.species); <span class="hljs-comment">// 动物</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="2、prototype模式"><a href="#2、prototype模式" class="headerlink" title="2、prototype模式"></a>2、prototype模式</h3><p>第二种方法更常见，使用prototype属性。</p>
+<p>如果”猫”的prototype对象，指向一个Animal的实例，那么所有”猫”的实例，就能继承Animal了。</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs reasonml"><span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Cat</span>.</span></span>prototype = <span class="hljs-keyword">new</span> <span class="hljs-constructor">Animal()</span>;<br><span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Cat</span>.</span></span>prototype.constructor = Cat;<br>var cat1 = <span class="hljs-keyword">new</span> <span class="hljs-constructor">Cat(<span class="hljs-string">&quot;大毛&quot;</span>,<span class="hljs-string">&quot;黄色&quot;</span>)</span>;<br>alert(cat1.species); <span class="hljs-comment">// 动物</span><br></code></pre></td></tr></table></figure>
+
+<p>代码的第一行，我们将Cat的prototype对象指向一个Animal的实例。</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs reasonml"><span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Cat</span>.</span></span>prototype = <span class="hljs-keyword">new</span> <span class="hljs-constructor">Animal()</span>;<br></code></pre></td></tr></table></figure>
+
+<p>它相当于完全删除了prototype 对象原先的值，然后赋予一个新值。但是，第二行又是什么意思呢？</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">Cat.prototype.constructor</span> = Cat<span class="hljs-comment">;</span><br></code></pre></td></tr></table></figure>
+
+<p>原来，任何一个prototype对象都有一个constructor属性，指向它的构造函数。如果没有”Cat.prototype = new Animal();”这一行，Cat.prototype.constructor是指向Cat的；加了这一行以后，Cat.prototype.constructor指向Animal。</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">alert(<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Cat</span>.</span></span>prototype.constructor<span class="hljs-operator"> == </span>Animal); <span class="hljs-comment">//true</span><br></code></pre></td></tr></table></figure>
+
+<p>更重要的是，每一个实例也有一个constructor属性，默认调用prototype对象的constructor属性。</p>
+<figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs delphi">alert(cat1.<span class="hljs-keyword">constructor</span> == Cat.prototype.<span class="hljs-keyword">constructor</span>);   <span class="hljs-comment">// true</span><br></code></pre></td></tr></table></figure>
+
+<p>因此，在运行”Cat.prototype = new Animal();”这一行之后，cat1.constructor也指向Animal！</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">alert<span class="hljs-params">(cat1.<span class="hljs-attr">constructor</span> == Animal)</span>;   <span class="hljs-string">//</span> <span class="hljs-literal">true</span><br></code></pre></td></tr></table></figure>
+
+<p>这显然会导致继承链的紊乱（cat1明明是用构造函数Cat生成的），因此我们必须手动纠正，将Cat.prototype对象的constructor值改为Cat。这就是第二行的意思。</p>
+<p>这是很重要的一点，编程时务必要遵守。下文都遵循这一点，即如果替换了prototype对象，</p>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs elm"><span class="hljs-title">o</span>.proto<span class="hljs-keyword">type</span> = &#123;&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>那么，下一步必然是为新的prototype对象加上constructor属性，并将这个属性指回原来的构造函数。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">o.prototype.constructor</span> = o<span class="hljs-comment">;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="3、直接继承prototype"><a href="#3、直接继承prototype" class="headerlink" title="3、直接继承prototype"></a>3、直接继承prototype</h3><p>第三种方法是对第二种方法的改进。由于Animal对象中，不变的属性都可以直接写入Animal.prototype。所以，我们也可以让Cat()跳过 Animal()，直接继承Animal.prototype。</p>
+<p>现在，我们先将Animal对象改写：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs reasonml"><span class="hljs-keyword">function</span> <span class="hljs-constructor">Animal()</span>&#123; &#125;<br><span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Animal</span>.</span></span>prototype.species = <span class="hljs-string">&quot;动物&quot;</span>;<br></code></pre></td></tr></table></figure>
+
+<p>然后，将Cat的prototype对象，然后指向Animal的prototype对象，这样就完成了继承。</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs reasonml"><span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Cat</span>.</span></span>prototype = <span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Animal</span>.</span></span>prototype;<br><span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Cat</span>.</span></span>prototype.constructor = Cat;<br>var cat1 = <span class="hljs-keyword">new</span> <span class="hljs-constructor">Cat(<span class="hljs-string">&quot;大毛&quot;</span>,<span class="hljs-string">&quot;黄色&quot;</span>)</span>;<br>alert(cat1.species); <span class="hljs-comment">// 动物</span><br></code></pre></td></tr></table></figure>
+
+<p>与前一种方法相比，这样做的优点是效率比较高（不用执行和建立Animal的实例了），比较省内存。缺点是 Cat.prototype和Animal.prototype现在指向了同一个对象，那么任何对Cat.prototype的修改，都会反映到Animal.prototype。</p>
+<p>所以，上面这一段代码其实是有问题的。请看第二行</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">Cat.prototype.constructor</span> = Cat<span class="hljs-comment">;</span><br></code></pre></td></tr></table></figure>
+
+<p>这一句实际上把Animal.prototype对象的constructor属性也改掉了！</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">alert(<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Animal</span>.</span></span>prototype.constructor);    <span class="hljs-comment">// Cat</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="4、利用空对象作为中介"><a href="#4、利用空对象作为中介" class="headerlink" title="4、利用空对象作为中介"></a>4、利用空对象作为中介</h3>
+    </section>
+    <section class="extra">
+      
+        <ul class="copyright">
+  
+  <li><strong>本文作者：</strong>Alina</li>
+  <li><strong>本文链接：</strong><a href="http://yoursite.com/2018/08/17/%E5%87%BD%E6%95%B0%E7%9A%84%E7%BB%A7%E6%89%BF/index.html">http://yoursite.com/2018/08/17/%E5%87%BD%E6%95%B0%E7%9A%84%E7%BB%A7%E6%89%BF/index.html</a></li>
+  <li><strong>版权声明：</strong>本博客所有文章均采用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh"
+      rel="external nofollow" target="_blank"> BY-NC-SA </a>许可协议，转载请注明出处！</li>
+  
+</ul>
+      
+      
+      
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/prototype-object/" rel="tag">prototype  object</a></li></ul>
+
+      
+<nav class="nav">
+  
+    <a href="/2018/10/28/%E7%90%86%E8%A7%A3JS%E4%BD%9C%E7%94%A8%E5%9F%9F/"><i class="iconfont iconleft"></i>理解JS作用域</a>
+  
+  
+</nav>
+
+    </section>
+    
+      <section class="comments">
+        
+          <div class="btn" id="comments-btn">查看评论</div>
+        
+        
+      </section>
+    
+  </section>
+</article>
+  </div>
+</main>
+  <footer class="footer">
+  <div class="footer-social">
+    
+    
+    
+    
+    
+    <a href="tencent://message/?Menu=yes&uin=992788754 " target="_blank" onMouseOver="this.style.color= '#12B7F5'"
+      onMouseOut="this.style.color='#CC99CC'">
+      <i class="iconfont footer-social-item  iconQQ "></i>
+    </a>
+    
+    
+    
+    
+    
+    <a href="javascript:; " target="_blank" onMouseOver="this.style.color= '#09BB07'"
+      onMouseOut="this.style.color='#CC99CC'">
+      <i class="iconfont footer-social-item  iconwechat-fill "></i>
+    </a>
+    
+    
+    
+    
+    
+    <a href="https://github.com/Alina-qiu " target="_blank" onMouseOver="this.style.color= '#24292E'"
+      onMouseOut="this.style.color='#CC99CC'">
+      <i class="iconfont footer-social-item  icongithub-fill "></i>
+    </a>
+    
+    
+    
+    
+    
+    <a href="mailto:zqy19957912@163.com " target="_blank" onMouseOver="this.style.color='#FFBE5B'"
+      onMouseOut="this.style.color='#CC99CC'">
+      <i class="iconfont footer-social-item  iconmail"></i>
+    </a>
+    
+  </div>
+  <div class="footer-copyright"><p>Copyright© 2017-2020 | <a target="_blank" href="https://alina-qiu.github.io/">Alina-qiu</a> .AllRightsReserved</p></div>
+</footer>
+  
+      <div class="fab fab-plus">
+    <i class="iconfont iconplus"></i>
+  </div>
+  
+  <div class="fab fab-daovoice">
+    <i class="iconfont iconcomment"></i>
+  </div>
+  
+  <div class="fab fab-up">
+    <i class="iconfont iconcaret-up"></i>
+  </div>
+  <div class="fab fab-menu">
+    <i class="iconfont iconmenu"></i>
+  </div>
+  
+</body>
+
+
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+
+
+
+
+
+
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+
+
+
+
+
+
+<script src="https://cdn.bootcdn.net/ajax/libs/justifiedGallery/3.7.0/js/jquery.justifiedGallery.min.js"></script>
+
+
+
+
+
+
+<script src="https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+
+
+
+
+
+<script src="/js/utils.js"></script>
+<script src="/js/zui.js"></script>
+<script src="/js/script.js"></script>
+
+
+
+
+
+<script defer>
+  (function (i, s, o, g, r, a, m) {
+    i["DaoVoiceObject"] = r;
+    i[r] = i[r] || function () {
+      (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date();
+    a = s.createElement(o), m = s.getElementsByTagName(o)[0];
+    a.async = 1;
+    a.src = g;
+    a.charset = "utf-8";
+    m.parentNode.insertBefore(a, m)
+  })(window, document, "script", ('https:' == document.location.protocol ? 'https:' : 'http:') +
+    "//widget.daovoice.io/widget/0f81ff2f.js", "daovoice")
+  daovoice('init', {
+    app_id: "abcdefg"
+  }, {
+    launcher: {
+      disableLauncherIcon: true,
+    },
+  });
+  daovoice('update');
+</script>
+
+
+
+<script defer>
+  (function () {
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    } else {
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+  })();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</html>
